@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+#
+# (c) 2017 Fetal-Neonatal Neuroimaging & Developmental Science Center
+#                   Boston Children's Hospital
+#
+#              http://childrenshospital.org/FNNDSC/
+#                        dev@babyMRI.org
+#
+
+import sys, os
+sys.path.insert(1, os.path.join(os.path.dirname(__file__), '../pfdicom_tagExtract'))
+
+import  pfdicom_tagExtract
+from    argparse            import RawTextHelpFormatter
+from    argparse            import ArgumentParser
+import  pudb
+
+import  pfmisc
+from    pfmisc._colors      import Colors
+from    pfmisc              import other
+
+str_version = "1.1.0"
+str_desc = Colors.CYAN + """
+
+
+        __    _ _                      _              _____     _                  _   
+       / _|  | (_)                    | |            |  ___|   | |                | |  
+ _ __ | |_ __| |_  ___ ___  _ __ ___  | |_ __ _  __ _| |____  _| |_ _ __ __ _  ___| |_ 
+| '_ \|  _/ _` | |/ __/ _ \| '_ ` _ \ | __/ _` |/ _` |  __\ \/ / __| '__/ _` |/ __| __|
+| |_) | || (_| | | (_| (_) | | | | | || || (_| | (_| | |___>  <| |_| | | (_| | (__| |_ 
+| .__/|_| \__,_|_|\___\___/|_| |_| |_| \__\__,_|\__, \____/_/\_\\__|_|  \__,_|\___|\__|
+| |                                ______        __/ |                                 
+|_|                               |______|      |___/                                  
+
+  
+                        Path-File DICOM tag extactor
+
+        Recursively walk down a directory tree and extract DICOM tags,
+        writing report files preserving directory structure in output tree.
+
+                             -- version """ + \
+             Colors.YELLOW + str_version + Colors.CYAN + """ --
+
+        'pfdicom_tagExtract' is a customizable and friendly DICOM tag extractor. 
+        As part of the "pf*" suite of applications, it is geared to IO as 
+        directories. Input DICOM trees are reconstructed in an output
+        directory, preserving directory structure. Each node tree contains
+        report files on the corresponding input location's DICOM files.
+
+
+""" + Colors.NO_COLOUR
+
+def synopsis(ab_shortOnly = False):
+    scriptName = os.path.basename(sys.argv[0])
+    shortSynopsis =  '''
+    NAME
+
+	    %s - process DICOM file header information down a file system tree.
+
+    SYNOPSIS
+
+            %s                                       \\
+                    -I|--inputDir <inputDir>                \\
+                        [-i|--inputFile <inputFile>]        \\
+                        [-e|--extension <DICOMextension>]   \\
+                        [-F|--tagFile <tagFile>] |          \\
+                        [-T|--tagList <tagList>] |          \\
+                    [-m|--image <imageFile>]                \\
+                    [-O|--outputDir <outputDir>]            \\
+                    [-o|--output <outputFileStem>]          \\
+                    [-t|--outputFileType <outputFileType>]  \\
+                    [-p|--printToScreen]                    \\
+                    [-x|--man]                              \\
+                    [-y|--synopsis]
+
+    BRIEF EXAMPLE
+
+	    %s -l tagList.txt -i slice.dcm
+
+    ''' % (scriptName, scriptName, scriptName)
+
+    description =  '''
+    DESCRIPTION
+
+        `%s` extracts the header information of DICOM files and echoes to
+        stdout as well as to an output report-type file -- this can be a raw
+        output, a json-type output, or html-type output.
+
+        The script accepts an <inputDir>, and then from this point an os.walk
+        is performed to extract all the subdirs. Each subdir is examined for
+        DICOM files (in the simplest sense by a file extension mapping) and 
+        either the head, tail, middle (or other indexed) file is examined for
+        its tag information.
+
+        Optionally, the tag list can be constrained either by passing a
+        <tagFile> containing a line-by-line list of tags to query, or
+        by passing a comma separated list of tags directly.
+
+        Finally, an image conversion can also be performed (and embedded
+        within the output html file, if an html conversion is specified).
+
+    ARGS
+
+        -I|--inputDir <inputDir>
+        Input DICOM directory to examine. By default, the first file in this
+        directory is examined for its tag information. There is an implicit
+        assumption that each <inputDir> contains a single DICOM series.
+
+        -i|--inputFile <inputFile>
+        An optional <inputFile> specified relative to the <inputDir>. If 
+        specified, then do not perform a directory walk, but convert only 
+        this file.
+
+        -e|--extension <DICOMextension>
+        An optional extension to filter the DICOM files of interest from the 
+        <inputDir>.
+
+        [-O|--outputDir <outputDir>]
+        The directory to contain all output files.
+
+        NOTE: If neither -F nor -T are specified, a '-r raw' is
+        assumed.
+
+        -F|--tagFile <tagFile>
+        Read the tags, one-per-line in <tagFile>, and print the
+        corresponding tag information in the DICOM <inputFile>.
+
+        -T|--tagList <tagList>
+        Read the list of comma-separated tags in <tagList>, and print the
+        corresponding tag information parsed from the DICOM <inputFile>.
+
+        -m|--image <[<index>:]imageFile>
+        If specified, also convert the <inputFile> to <imageFile>. If the
+        name is preceded by an index and colon, then convert this indexed 
+        file in the particular <inputDir>.
+
+        -o|--outputFileStem <outputFileStem>
+        The output file stem to store data. This should *not* have a file
+        extension, or rather, any "." in the name are considered part of 
+        the stem and are *not* considered extensions.
+
+        [-t|--outputFileType <outputFileType>]
+        A comma specified list of output types. These can be:
+
+            o <type>    <ext>       <desc>
+            o raw       -raw.txt    the raw internal dcm structure to string
+            o json      .json       a json representation
+            o html      .html       an html representation with optional image
+            o dict      -dict.txt   a python dictionary
+            o col       -col.txt    a two-column text representation (tab sep)
+            o csv       .csv        a csv representation
+
+        [-p|--printToScreen]
+        If specified, will print tags to screen.
+
+        [-x|--man]
+        Show full help.
+
+        [-y|--synopsis]
+        Show brief help.
+
+        -v|--verbosity <level>
+        Set the app verbosity level. 
+
+             -1: No internal output.
+              0: All internal output.
+
+    EXAMPLES
+
+    ''' % (scriptName)
+    if ab_shortOnly:
+        return shortSynopsis
+    else:
+        return shortSynopsis + description
+
+
+
+parser  = ArgumentParser(description = str_desc, formatter_class = RawTextHelpFormatter)
+
+parser.add_argument("-I", "--inputDir",
+                    help    = "input dir",
+                    dest    = 'inputDir')
+parser.add_argument("-i", "--inputFile",
+                    help    = "input file",
+                    dest    = 'inputFile',
+                    default = '')
+parser.add_argument("-e", "--extension",
+                    help    = "DICOM file extension",
+                    dest    = 'extension',
+                    default = '')
+parser.add_argument("-F", "--tagFile",
+                    help    = "file containing tags to parse",
+                    dest    = 'tagFile',
+                    default = '')
+parser.add_argument("-T", "--tagList",
+                    help    = "comma-separated tag list",
+                    dest    = 'tagList',
+                    default = '')
+parser.add_argument("-r",
+                    help    = "display raw tags",
+                    dest    = 'rawType',
+                    default = 'raw')
+parser.add_argument("-m", "--imageFile",
+                    help    = "image file to convert DICOM input",
+                    dest    = 'imageFile',
+                    default = '')
+parser.add_argument("-o", "--outputFileStem",
+                    help    = "output file",
+                    default = "",
+                    dest    = 'outputFileStem')
+parser.add_argument("-O", "--outputDir",
+                    help    = "output image directory",
+                    dest    = 'outputDir',
+                    default = '.')
+parser.add_argument("-t", "--outputFileType",
+                    help    = "list of output report types",
+                    dest    = 'outputFileType',
+                    default = '')
+parser.add_argument("--printElapsedTime",
+                    help    = "print program run time",
+                    dest    = 'printElapsedTime',
+                    action  = 'store_true',
+                    default = False)
+parser.add_argument("-p", "--printToScreen",
+                    help    = "print output to screen",
+                    dest    = 'printToScreen',
+                    action  = 'store_true',
+                    default = False)
+parser.add_argument("-x", "--man",
+                    help    = "man",
+                    dest    = 'man',
+                    action  = 'store_true',
+                    default = False)
+parser.add_argument("-y", "--synopsis",
+                    help    = "short synopsis",
+                    dest    = 'synopsis',
+                    action  = 'store_true',
+                    default = False)
+parser.add_argument("-v", "--verbosity",
+                    help    = "verbosity level for app",
+                    dest    = 'verbosity',
+                    default = "0")
+parser.add_argument('--version',
+                    help    = 'if specified, print version number',
+                    dest    = 'b_version',
+                    action  = 'store_true',
+                    default = False)
+
+args = parser.parse_args()
+
+if args.man or args.synopsis:
+    print(str_desc)
+    if args.man:
+        str_help     = synopsis(False)
+    else:
+        str_help     = synopsis(True)
+    print(str_help)
+    sys.exit(1)
+
+if args.b_version:
+    print("Version: %s" % str_version)
+    sys.exit(1)
+
+pudb.set_trace()
+
+pf_dicom_tagExtract = pfdicom_tagExtract.pfdicom_tagExtract(
+                        inputDir            = args.inputDir,
+                        inputFile           = args.inputFile,
+                        extension           = args.extension,
+                        outputDir           = args.outputDir,
+                        outputFileStem      = args.outputFileStem,
+                        outputFileType      = args.outputFileType,
+                        tagFile             = args.tagFile,
+                        tagList             = args.tagList,
+                        printToScreen       = args.printToScreen,
+                        imageFile           = args.imageFile,
+                        verbosity           = args.verbosity
+                    )
+
+# And now run it!
+other.tic()
+pf_dicom_tagExtract.run()
+if args.printElapsedTime: pf_dicom_tagExtract.dp.qprint("Elapsed time = %f seconds" % other.toc())
+sys.exit(0)
