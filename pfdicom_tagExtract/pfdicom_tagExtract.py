@@ -208,7 +208,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
 
             d_DCMfileRead   = self.DICOMfile_read( 
                                     file        = '%s/%s' % (str_path, str_file),
-                                    l_tagsToUse = l_file
+                                    l_tagsToUse = l_tagsToUse
             )
             l_tagsToUse     = d_DCMfileRead['l_tagsToUse']      
 
