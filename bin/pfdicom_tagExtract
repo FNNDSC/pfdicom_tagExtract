@@ -55,36 +55,44 @@ def synopsis(ab_shortOnly = False):
     shortSynopsis =  '''
     NAME
 
-	    %s - process DICOM file header information down a file system tree.
+	    pfdicom_tagExtract 
+        - process DICOM file header information down a file system tree.
 
     SYNOPSIS
 
-            %s                                       \\
-                    -I|--inputDir <inputDir>                \\
-                        [-i|--inputFile <inputFile>]        \\
-                        [-e|--extension <DICOMextension>]   \\
-                        [-F|--tagFile <tagFile>] |          \\
-                        [-T|--tagList <tagList>] |          \\
+            pfdicom_tagExtract                              \\
+                     -I|--inputDir <inputDir>               \\
+                    [-i|--inputFile <inputFile>]            \\
+                    [-e|--extension <DICOMextension>]       \\
+                    [-F|--tagFile <tagFile>] |              \\
+                    [-T|--tagList <tagList>] |              \\
                     [-m|--image <imageFile>]                \\
-                    [-O|--outputDir <outputDir>]            \\
-                    [-o|--output <outputFileStem>]          \\
-                    [-t|--outputFileType <outputFileType>]  \\
+                     -O|--outputDir <outputDir>             \\
+                     -o|--output <outputFileStem>           \\
+                    [-t|--outputFileType <outputFileType>   \\
+                    [--threads <numThreads>]                \\
                     [-p|--printToScreen]                    \\
                     [-x|--man]                              \\
                     [-y|--synopsis]
 
     BRIEF EXAMPLE
 
-	    %s -l tagList.txt -i slice.dcm
+        pfdicom_tagExtract                                  \\
+                    -I /var/www/html/normsmall -e dcm       \\
+                    -O /var/www/html/tag                    \\
+                    -o %_md5|6_PatientID-%PatientAge        \\
+                    -m m:%_md5|6_PatientID-%PatientAge.jpg  \\
+                    -t raw,json,html,dict,col,csv           \\
+                    --threads 0 -v 1
 
-    ''' % (scriptName, scriptName, scriptName)
+    '''
 
     description =  '''
     DESCRIPTION
 
-        `%s` extracts the header information of DICOM files and echoes to
-        stdout as well as to an output report-type file -- this can be a raw
-        output, a json-type output, or html-type output.
+        `pfdicom_tagExtract` extracts the header information of DICOM files 
+        and echoes to stdout as well as to an output report-type file -- this 
+        can be a raw output, a json-type output, or html-type output.
 
         The script accepts an <inputDir>, and then from this point an os.walk
         is performed to extract all the subdirs. Each subdir is examined for
@@ -106,30 +114,30 @@ def synopsis(ab_shortOnly = False):
         directory is examined for its tag information. There is an implicit
         assumption that each <inputDir> contains a single DICOM series.
 
-        -i|--inputFile <inputFile>
+        [-i|--inputFile <inputFile>]
         An optional <inputFile> specified relative to the <inputDir>. If 
         specified, then do not perform a directory walk, but convert only 
         this file.
 
-        -e|--extension <DICOMextension>
+        [-e|--extension <DICOMextension>]
         An optional extension to filter the DICOM files of interest from the 
         <inputDir>.
 
-        [-O|--outputDir <outputDir>]
+        -O|--outputDir <outputDir>
         The directory to contain all output files.
 
         NOTE: If neither -F nor -T are specified, a '-r raw' is
         assumed.
 
-        -F|--tagFile <tagFile>
+        [-F|--tagFile <tagFile>]
         Read the tags, one-per-line in <tagFile>, and print the
         corresponding tag information in the DICOM <inputFile>.
 
-        -T|--tagList <tagList>
+        [-T|--tagList <tagList>]
         Read the list of comma-separated tags in <tagList>, and print the
         corresponding tag information parsed from the DICOM <inputFile>.
 
-        -m|--image <[<index>:]imageFile>
+        [-m|--image <[<index>:]imageFile>]
         If specified, also convert the <inputFile> to <imageFile>. If the
         name is preceded by an index and colon, then convert this indexed 
         file in the particular <inputDir>.
@@ -153,21 +161,48 @@ def synopsis(ab_shortOnly = False):
         [-p|--printToScreen]
         If specified, will print tags to screen.
 
+        [--threads <numThreads>]
+        If specified, break the innermost analysis loop into <numThreads>
+        threads.
+
         [-x|--man]
         Show full help.
 
         [-y|--synopsis]
         Show brief help.
 
+        [--json]
+        If specified, output a JSON dump of final return.
+
         -v|--verbosity <level>
         Set the app verbosity level. 
 
-             -1: No internal output.
-              0: All internal output.
+            0: No internal output;
+            1: Run start / stop output notification;
+            2: As with level '1' but with simpleProgress bar in 'pftree';
+            3: As with level '2' but with list of input dirs/files in 'pftree';
+            5: As with level '3' but with explicit file logging for
+                    - read
+                    - analyze
+                    - write
 
     EXAMPLES
 
-    ''' % (scriptName)
+    Extract DICOM header info down an input tree and save reports
+    to output tree:
+
+        pfdicom_tagExtract                                  \\
+                    -I /var/www/html/normsmall -e dcm       \\
+                    -O /var/www/html/tag                    \\
+                    -o %_md5|6_PatientID-%PatientAge        \\
+                    -m m:%_md5|6_PatientID-%PatientAge.jpg  \\
+                    -t raw,json,html,dict,col,csv           \\
+                    --threads 0 -v 1
+
+        which will output only at script conclusion and will log a JSON 
+        formatted string.
+
+    '''
     if ab_shortOnly:
         return shortSynopsis
     else:
@@ -221,6 +256,11 @@ parser.add_argument("--printElapsedTime",
                     dest    = 'printElapsedTime',
                     action  = 'store_true',
                     default = False)
+parser.add_argument("--useIndexhtml",
+                    help    = "force html file to be called 'index.html'",
+                    dest    = 'useIndexhtml',
+                    action  = 'store_true',
+                    default = False)
 parser.add_argument("-p", "--printToScreen",
                     help    = "print output to screen",
                     dest    = 'printToScreen',
@@ -236,6 +276,10 @@ parser.add_argument("-y", "--synopsis",
                     dest    = 'synopsis',
                     action  = 'store_true',
                     default = False)
+parser.add_argument("--threads",
+                    help    = "number of threads for innermost loop processing",
+                    dest    = 'threads',
+                    default = "1")
 parser.add_argument("-v", "--verbosity",
                     help    = "verbosity level for app",
                     dest    = 'verbosity',
@@ -245,7 +289,11 @@ parser.add_argument('--version',
                     dest    = 'b_version',
                     action  = 'store_true',
                     default = False)
-
+parser.add_argument("--json",
+                    help    = "output final return in json",
+                    dest    = 'json',
+                    action  = 'store_true',
+                    default = False)
 args = parser.parse_args()
 
 if args.man or args.synopsis:
@@ -258,10 +306,10 @@ if args.man or args.synopsis:
     sys.exit(1)
 
 if args.b_version:
-    print("Version: %s" % str_version)
+    print("Version: %s" % str_version) 
     sys.exit(1)
 
-# pudb.set_trace()
+pudb.set_trace()
 
 pf_dicom_tagExtract = pfdicom_tagExtract.pfdicom_tagExtract(
                         inputDir            = args.inputDir,
@@ -269,16 +317,24 @@ pf_dicom_tagExtract = pfdicom_tagExtract.pfdicom_tagExtract(
                         extension           = args.extension,
                         outputDir           = args.outputDir,
                         outputFileStem      = args.outputFileStem,
+                        useIndexhtml        = args.useIndexhtml,
                         outputFileType      = args.outputFileType,
                         tagFile             = args.tagFile,
                         tagList             = args.tagList,
                         printToScreen       = args.printToScreen,
+                        threads             = args.threads,
                         imageFile           = args.imageFile,
-                        verbosity           = args.verbosity
+                        verbosity           = args.verbosity,
+                        json                = args.json   
                     )
 
 # And now run it!
-other.tic()
-pf_dicom_tagExtract.run()
-if args.printElapsedTime: pf_dicom_tagExtract.dp.qprint("Elapsed time = %f seconds" % other.toc())
+d_pfdicom_tagExtract = pf_dicom_tagExtract.run(timerStart = True)
+
+if args.printElapsedTime: 
+    pf_dicom_tagExtract.dp.qprint(
+                                "Elapsed time = %f seconds" % 
+                                d_pfdicom_tagExtract['runTime']
+                            )
+
 sys.exit(0)
