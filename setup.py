@@ -17,7 +17,7 @@ setup(
       long_description =   readme(),
       author           =   'FNNDSC',
       author_email     =   'dev@babymri.org',
-      url              =   'https://github.com/FNNDSC/med2image',
+      url              =   'https://github.com/FNNDSC/pfdicom_tagExtract',
       packages         =   ['pfdicom_tagExtract'],
       install_requires =   ['pfdicom', 'matplotlib'],
       #test_suite       =   'nose.collector',
