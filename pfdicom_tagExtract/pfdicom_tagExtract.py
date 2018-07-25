@@ -19,7 +19,6 @@ import      pfdicom
 import      pylab
 import      matplotlib.cm       as      cm
 
-
 class pfdicom_tagExtract(pfdicom.pfdicom):
     """
 
@@ -55,6 +54,8 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         self.b_convertToImg             = False
         self.str_outputImageFile        = ''
         self.str_imageIndex             = ''
+        self.f_imageScale               = None
+        self.str_interpolation          = None
 
         # Tags
         self.b_tagList                  = False
@@ -102,6 +103,15 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             if len(self.str_outputImageFile):
                 self.b_convertToImg         = True
 
+        def imageScale_process(str_imageScale):
+            if len(str_imageScale):
+                try:
+                    str_scale, str_interpolation    = str_imageScale.split(':')
+                    self.str_interpolation          = str_interpolation
+                except:
+                    str_scale                       = str_imageScale
+                self.f_imageScale                   = float(str_scale)
+
         def tagList_process(str_tagList):
             self.str_tagList            = str_tagList
             if len(self.str_tagList):
@@ -130,6 +140,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             if key == 'printToScreen':      self.b_printToScreen        = bool(value)
             if key == 'useIndexhtml':       self.b_useIndexhtml         = bool(value)
             if key == 'imageFile':          imageFileName_process(value)
+            if key == 'imageScale':         imageScale_process(value)
             if key == 'tagFile':            tagFile_process(value)
             if key == 'tagList':            tagList_process(value)
             if key == 'verbosity':          self.verbosityLevel         = int(value)
@@ -315,12 +326,20 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         str_pathFile        = '%s/%s' % (astr_path, str_outputImageFile)
         self.dp.qprint('Saving image file: %s...' % str_pathFile, level = 5)
         try:
-            pylab.imshow(d_DICOM['dcm'].pixel_array, cmap=pylab.cm.bone)
-            ax  = pylab.gca()
+            image           = d_DICOM['dcm'].pixel_array
+            pylab.imshow(image, cmap=pylab.cm.bone, interpolation = self.str_interpolation)
+            ax              = pylab.gca()
+            F               = pylab.gcf()
+            defaultSize     = F.get_size_inches()
+            if self.f_imageScale: 
+                F.set_size_inches( (defaultSize[0]*self.f_imageScale, 
+                                    defaultSize[1]*self.f_imageScale) )
             ax.set_facecolor('#1d1f21')
             ax.tick_params(axis = 'x', colors='white')
             ax.tick_params(axis = 'y', colors='white')
             pylab.savefig(str_pathFile, facecolor = ax.get_facecolor())
+            if self.f_imageScale:
+                F.set_size_inches(defaultSize)
             b_status    = True
         except:
             pass
@@ -357,9 +376,11 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                 </head>
                 <body style = "background-color: #1d1f21; color: white">
                 %s
+                <div style="text-align:left">
                     <pre>
                 %s
                     </pre>
+                </div>
                 </body>
                 </html> ''' % (str_inputFile, str_img, "\n" + str_rawContent)
             return htmlPage
@@ -385,54 +406,57 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             str_outputImageFile = d_convertToImg['str_outputImageFile']
         for str_outputFormat in self.l_outputFileType:
             str_fileStem        = d_outputInfo['d_DCMfileRead']['outputFileStem']
-            if str_outputFormat == 'json': 
-                str_fileName = str_fileStem + '.json' 
-                with open('%s/%s' % (path, str_fileName), 'w') as f:
-                    f.write(d_outputInfo['dstr_result']['json'])
-                self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
-                filesSaved  += 1
-            if str_outputFormat == 'dict': 
-                str_fileName = str_fileStem + '-dict.txt' 
-                with open('%s/%s' % (path, str_fileName), 'w') as f:
-                    f.write(d_outputInfo['dstr_result']['dict'])
-                self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
-                filesSaved  += 1
-            if str_outputFormat == 'col': 
-                str_fileName = str_fileStem + '-col.txt' 
-                with open('%s/%s' % (path, str_fileName), 'w') as f:
-                    f.write(d_outputInfo['dstr_result']['col'])
-                self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
-                filesSaved  += 1
-            if str_outputFormat == 'raw': 
-                str_fileName = str_fileStem + '-raw.txt' 
-                with open('%s/%s' % (path, str_fileName), 'w') as f:
-                    f.write(d_outputInfo['dstr_result']['raw'])
-                self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
-                filesSaved  += 1
-            if str_outputFormat == 'html': 
-                str_fileName = str_fileStem + '.html' 
-                with open('%s/%s' % (path, str_fileName), 'w') as f:
-                    f.write(
-                        html_make(  d_outputInfo['d_DCMfileRead']['inputFilename'],
-                                    d_outputInfo['dstr_result']['raw'],
-                                    str_outputImageFile)
-                    )
-                self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
-                filesSaved  += 1
-            if str_outputFormat == 'csv':
-                str_fileName = str_fileStem + '-csv.txt' 
-                with open('%s/%s' % (path, str_fileName), 'w') as f:
-                    w = csv.DictWriter(f, d_outputInfo
-                                                    ['d_DCMfileRead']
-                                                    ['d_DICOM']
-                                                    ['d_json'].keys())
-                    w.writeheader()
-                    w.writerow(d_outputInfo
-                                                    ['d_DCMfileRead']
-                                                    ['d_DICOM']
-                                                    ['d_json'])
-                self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
-                filesSaved  += 1
+            if len(str_fileStem):
+                if str_outputFormat == 'json': 
+                    str_fileName = str_fileStem + '.json' 
+                    with open('%s/%s' % (path, str_fileName), 'w') as f:
+                        f.write(d_outputInfo['dstr_result']['json'])
+                    self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
+                    filesSaved  += 1
+                if str_outputFormat == 'dict': 
+                    str_fileName = str_fileStem + '-dict.txt' 
+                    with open('%s/%s' % (path, str_fileName), 'w') as f:
+                        f.write(d_outputInfo['dstr_result']['dict'])
+                    self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
+                    filesSaved  += 1
+                if str_outputFormat == 'col': 
+                    str_fileName = str_fileStem + '-col.txt' 
+                    with open('%s/%s' % (path, str_fileName), 'w') as f:
+                        f.write(d_outputInfo['dstr_result']['col'])
+                    self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
+                    filesSaved  += 1
+                if str_outputFormat == 'raw': 
+                    str_fileName = str_fileStem + '-raw.txt' 
+                    with open('%s/%s' % (path, str_fileName), 'w') as f:
+                        f.write(d_outputInfo['dstr_result']['raw'])
+                    self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
+                    filesSaved  += 1
+                if str_outputFormat == 'html': 
+                    str_fileName = str_fileStem + '.html'
+                    if self.b_useIndexhtml:
+                        str_fileName = 'index.html' 
+                    with open('%s/%s' % (path, str_fileName), 'w') as f:
+                        f.write(
+                            html_make(  d_outputInfo['d_DCMfileRead']['inputFilename'],
+                                        d_outputInfo['dstr_result']['raw'],
+                                        str_outputImageFile)
+                        )
+                    self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
+                    filesSaved  += 1
+                if str_outputFormat == 'csv':
+                    str_fileName = str_fileStem + '-csv.txt' 
+                    with open('%s/%s' % (path, str_fileName), 'w') as f:
+                        w = csv.DictWriter(f, d_outputInfo
+                                                        ['d_DCMfileRead']
+                                                        ['d_DICOM']
+                                                        ['d_json'].keys())
+                        w.writeheader()
+                        w.writerow(d_outputInfo
+                                                        ['d_DCMfileRead']
+                                                        ['d_DICOM']
+                                                        ['d_json'])
+                    self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
+                    filesSaved  += 1
         return {
             'status':       True,
             'filesSaved':   filesSaved
@@ -495,36 +519,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         if self.b_json:
             self.ret_dump(d_ret, **kwargs)
 
-        self.dp.qprint('Returing from pfdicom_tagExtract run...', level = 1)
+        self.dp.qprint('Returning from pfdicom_tagExtract run...', level = 1)
 
         return d_ret
-
-
-        # d_env       = self.env_check()
-        # if d_env['status']:
-        #     d_pftreeRun = self.pf_tree.run()
-        # else:
-        #     b_status    = False 
-
-        # str_startDir    = os.getcwd()
-        # os.chdir(self.str_inputDir)
-        # if b_status:
-        #     d_inputAnalysis = self.pf_tree.tree_analysisApply(
-        #                         analysiscallback        = self.filelist_prune,
-        #                         applyResultsTo          = 'inputTree',
-        #                         applyKey                = 'l_file',
-        #                         persistAnalysisResults  = True
-        #     )
-        #     d_tagsExtract   = self.pf_tree.tree_analysisApply(
-        #                         analysiscallback        = self.tags_process,
-        #                         outputcallback          = self.outputSave,
-        #                         persistAnalysisResults  = False
-        #     )
-
-        # os.chdir(str_startDir)
-        # return {
-        #     'status':       b_status and d_pftreeRun['status'],
-        #     'd_env':        d_env,
-        #     'd_pftreeRun':  d_pftreeRun
-        # }
-        
