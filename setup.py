@@ -12,8 +12,8 @@ def readme():
 
 setup(
       name             =   'pfdicom_tagExtract',
-      version          =   '1.1.6',
-      description      =   '(Python) Extract DICOM header info -- part of the pf* family.',
+      version          =   '1.1.8',
+      description      =   'Extract DICOM header info -- part of the pf* family.',
       long_description =   readme(),
       author           =   'FNNDSC',
       author_email     =   'dev@babymri.org',
