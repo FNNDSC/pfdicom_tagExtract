@@ -36,7 +36,7 @@ The following dependencies are installed on your host system/python3 virtual env
 
 -  ``pfmisc`` (various misc modules and classes for the pf* family of objects)
 -  ``pftree`` (create a dictionary representation of a filesystem hierarchy)
--  ``pfidcom`` (handle underlying DICOM file reading)
+-  ``pfdicom`` (handle underlying DICOM file reading)
 -  ``matplotlib`` (handle saving / conversion to image formats for html reports)
 
 Installation
