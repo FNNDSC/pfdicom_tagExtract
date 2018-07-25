@@ -12,7 +12,7 @@ def readme():
 
 setup(
       name             =   'pfdicom_tagExtract',
-      version          =   '1.2.0',
+      version          =   '2.0.0',
       description      =   'Extract DICOM header info -- part of the pf* family.',
       long_description =   readme(),
       author           =   'FNNDSC',
