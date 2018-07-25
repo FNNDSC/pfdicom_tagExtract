@@ -86,6 +86,20 @@ Command line arguments
         name is preceded by an index and colon, then convert this indexed 
         file in the particular <inputDir>.
 
+        [-s|--imageScale <factor:interpolation>]
+        If an image conversion is specified, this flag will scale the image
+        by <factor> and use an interpolation <order>. This is useful in 
+        increasing the size of images for the html output.
+
+        Note that certain interpolation choices can result in a significant
+        slowdown!
+
+            interpolation order:
+            
+            'none', 'nearest', 'bilinear', 'bicubic', 'spline16',
+            'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
+            'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos'
+
         -o|--outputFileStem <outputFileStem>
         The output file stem to store data. This should *not* have a file
         extension, or rather, any "." in the name are considered part of 
@@ -101,6 +115,8 @@ Command line arguments
             o dict      -dict.txt   a python dictionary
             o col       -col.txt    a two-column text representation (tab sep)
             o csv       .csv        a csv representation
+
+        Note that if not specified, a default type of 'raw' is assigned.
 
         [-p|--printToScreen]
         If specified, will print tags to screen.
