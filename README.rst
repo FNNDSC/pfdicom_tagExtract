@@ -70,8 +70,19 @@ Command line arguments
         [-O|--outputDir <outputDir>]
         The directory to contain all output files.
 
-        NOTE: If neither -F nor -T are specified, a '-r raw' is
-        assumed.
+        [--outputLeafDir <outputLeafDirFormat>]
+        If specified, will apply the <outputLeafDirFormat> to the output
+        directories containing data. This is useful to blanket describe
+        final output directories with some descriptive text, such as 
+        'anon' or 'preview'. 
+
+        This is a formatting spec, so 
+
+            --outputLeafDir 'preview-%s'
+
+        where %s is the original leaf directory node, will prefix each
+        final directory containing output with the text 'preview-' which
+        can be useful in describing some features of the output set.
 
         -F|--tagFile <tagFile>
         Read the tags, one-per-line in <tagFile>, and print the
