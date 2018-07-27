@@ -128,8 +128,19 @@ def synopsis(ab_shortOnly = False):
         to the input directory, and each "leaf" node will contain the analysis
         results.
 
-        NOTE: If neither -F nor -T are specified, a '-r raw' is
-        assumed.
+        [--outputLeafDir <outputLeafDirFormat>]
+        If specified, will apply the <outputLeafDirFormat> to the output
+        directories containing data. This is useful to blanket describe
+        final output directories with some descriptive text, such as 
+        'anon' or 'preview'. 
+
+        This is a formatting spec, so 
+
+            --outputLeafDir 'preview-%%s'
+
+        where %%s is the original leaf directory node, will prefix each
+        final directory containing output with the text 'preview-' which
+        can be useful in describing some features of the output set.
 
         [-F|--tagFile <tagFile>]
         Read the tags, one-per-line in <tagFile>, and print the
@@ -302,6 +313,10 @@ parser.add_argument("--threads",
                     help    = "number of threads for innermost loop processing",
                     dest    = 'threads',
                     default = "0")
+parser.add_argument("--outputLeafDir",
+                    help    = "formatting spec for output leaf directory",
+                    dest    = 'outputLeafDir',
+                    default = "")
 parser.add_argument("-v", "--verbosity",
                     help    = "verbosity level for app",
                     dest    = 'verbosity',
@@ -339,6 +354,7 @@ pf_dicom_tagExtract = pfdicom_tagExtract.pfdicom_tagExtract(
                         extension           = args.extension,
                         outputDir           = args.outputDir,
                         outputFileStem      = args.outputFileStem,
+                        outputLeafDir       = args.outputLeafDir,
                         useIndexhtml        = args.useIndexhtml,
                         outputFileType      = args.outputFileType,
                         tagFile             = args.tagFile,
