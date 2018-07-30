@@ -29,8 +29,11 @@ Optionally, the tag list can be constrained either by passing a ``<tagFile>`` co
 
 Finally, an image conversion can also be performed (and embedded within the output html file, if an html conversion is specified).
 
-Dependencies
+Installation
 ------------
+
+Dependencies
+~~~~~~~~~~~~
 
 The following dependencies are installed on your host system/python3 virtual env (they will also be automatically installed if pulled from pypi):
 
@@ -39,14 +42,15 @@ The following dependencies are installed on your host system/python3 virtual env
 -  ``pfdicom`` (handle underlying DICOM file reading)
 -  ``matplotlib`` (handle saving / conversion to image formats for html reports)
 
-Installation
-~~~~~~~~~~~~
+Using ``PyPI``
+~~~~~~~~~~~~~~
 
-The best method of installing this script and all of its dependencies is by fetching it from PyPI
+The best method of installing this script and all of its dependencies is
+by fetching it from PyPI
 
 .. code:: bash
 
-        pip3 install pfdciom_tagExtract
+        pip3 install pfdicom_tagExtract
 
 Command line arguments
 ----------------------
@@ -151,7 +155,7 @@ Command line arguments
                     - write
 
 Examples
-~~~~~~~~
+--------
 
 Run on a target tree and output some detail and stats
 
