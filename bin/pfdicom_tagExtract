@@ -60,29 +60,34 @@ def synopsis(ab_shortOnly = False):
 
     SYNOPSIS
 
-            pfdicom_tagExtract                              \\
-                     -I|--inputDir <inputDir>               \\
-                    [-i|--inputFile <inputFile>]            \\
-                    [-e|--extension <DICOMextension>]       \\
-                    [-F|--tagFile <tagFile>] |              \\
-                    [-T|--tagList <tagList>] |              \\
-                    [-m|--image <imageFile>]                \\
-                     -O|--outputDir <outputDir>             \\
-                     -o|--output <outputFileStem>           \\
-                    [-t|--outputFileType <outputFileType>   \\
-                    [--threads <numThreads>]                \\
-                    [-p|--printToScreen]                    \\
-                    [-x|--man]                              \\
+            pfdicom_tagExtract                                      \\
+                     -I|--inputDir <inputDir>                       \\
+                    [-i|--inputFile <inputFile>]                    \\
+                    [-e|--extension <DICOMextension>]               \\
+                    [-F|--tagFile <tagFile>] |                      \\
+                    [-T|--tagList <tagList>] |                      \\
+                    [-m|--image <imageFile>]                        \\
+                     -O|--outputDir <outputDir>                     \\
+                     -o|--output <outputFileStem>                   \\
+                    [-s|--imageScale <factor>[:<interpolation>]]    \\
+                    [-t|--outputFileType <outputFileType>           \\
+                    [--threads <numThreads>]                        \\
+                    [-p|--printToScreen]                            \\
+                    [--json]                                        \\
+                    [--useIndexhtml]                                \\
+                    [-v <verbosity>]                                \\
+                    [--version]                                     \\
+                    [-x|--man]                                      \\
                     [-y|--synopsis]
 
     BRIEF EXAMPLE
 
-        pfdicom_tagExtract                                      \\
-                    -I /var/www/html/normsmall -e dcm           \\
-                    -O /var/www/html/tag                        \\
-                    -o '%_md5|6_PatientID-%PatientAge'          \\
-                    -m 'm:%_md5|6_PatientID-%PatientAge.jpg'    \\
-                    -t raw,json,html,dict,col,csv               \\
+        pfdicom_tagExtract                                          \\
+                    -I /var/www/html/normsmall -e dcm               \\
+                    -O /var/www/html/tag                            \\
+                    -o '%_md5|6_PatientID-%PatientAge'              \\
+                    -m 'm:%_md5|6_PatientID-%PatientAge.jpg'        \\
+                    -t raw,json,html,dict,col,csv                   \\
                     --threads 0 -v 1
 
     '''
@@ -155,7 +160,7 @@ def synopsis(ab_shortOnly = False):
         name is preceded by an index and colon, then convert this indexed 
         file in the particular <inputDir>.
 
-        [-s|--imageScale <factor:interpolation>]
+        [-s|--imageScale <factor>[:<interpolation>]]
         If an image conversion is specified, this flag will scale the image
         by <factor> and use an interpolation <order>. This is useful in 
         increasing the size of images for the html output.
@@ -194,16 +199,23 @@ def synopsis(ab_shortOnly = False):
         If specified, break the innermost analysis loop into <numThreads>
         threads.
 
+        [--useIndexhtml]
+        If specified, force the name of any output html reports to be
+        'index.html'.
+
         [-x|--man]
         Show full help.
 
         [-y|--synopsis]
         Show brief help.
 
+        [--version]
+        If specified, print the version number and exit.
+
         [--json]
         If specified, output a JSON dump of final return.
 
-        -v|--verbosity <level>
+        [-v|--verbosity <level>]
         Set the app verbosity level. 
 
             0: No internal output;
@@ -224,7 +236,9 @@ def synopsis(ab_shortOnly = False):
                     -I /var/www/html/normsmall -e dcm           \\
                     -O /var/www/html/tag                        \\
                     -o '%_md5|6_PatientID-%PatientAge'          \\
-                    -m 'm:%_md5|6_PatientID-%PatientAge.jpg'    \\
+                    -m 'm:%_nospc|-_ProtocolName.jpg'           \\
+                    -s 3:none                                   \\
+                    --useIndexhtml                              \\
                     -t raw,json,html,dict,col,csv               \\
                     --threads 0 -v 0 --json
 
