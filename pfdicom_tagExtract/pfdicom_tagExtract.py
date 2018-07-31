@@ -367,7 +367,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         def html_make(str_inputFile, str_rawContent, *args):
             str_img     = ""
             if self.b_convertToImg:
-                str_img = "<img src=%s>" % args[0]
+                str_img = "<img src='%s'>" % args[0]
             htmlPage = '''
                 <!DOCTYPE html>
                 <html>
