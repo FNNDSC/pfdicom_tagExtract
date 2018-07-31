@@ -161,12 +161,14 @@ Run on a target tree and output some detail and stats
 
 .. code:: bash
 
-        pfdicom_tagExtract                                      \\
-                    -I /var/www/html/normsmall -e dcm           \\
-                    -O /var/www/html/tag                        \\
-                    -o '%_md5|6_PatientID-%PatientAge'          \\
-                    -m 'm:%_md5|6_PatientID-%PatientAge.jpg'    \\
-                    -t raw,json,html,dict,col,csv               \\
+        pfdicom_tagExtract                                      \
+                    -I /var/www/html/normsmall -e dcm           \
+                    -O /var/www/html/tag                        \
+                    -o '%_md5|6_PatientID-%PatientAge'          \
+                    -m 'm:%_nospc|-_ProtocolName.jpg'           \
+                    -s 3:none                                   \
+                    --useIndexhtml                              \
+                    -t raw,json,html,dict,col,csv               \
                     --threads 0 -v 0 --json
  
 which will output only at script conclusion and will log a JSON formatted string.
