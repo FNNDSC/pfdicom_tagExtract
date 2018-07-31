@@ -142,6 +142,12 @@ Command line arguments
         [-y|--synopsis]
         Show brief help.
 
+        [--version]
+        If specified, print the version number and exit.
+
+        [--json]
+        If specified, output a JSON dump of final return.
+
         -v|--verbosity <level>
         Set the app verbosity level. 
 
