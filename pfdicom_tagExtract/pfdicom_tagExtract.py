@@ -16,6 +16,8 @@ import      pudb
 import      pftree
 import      pfdicom
 
+import      matplotlib
+matplotlib.use('Agg')
 import      pylab
 import      matplotlib.cm       as      cm
 
@@ -40,7 +42,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.0.14"
+        self.str_version                = "2.2.0"
 
         self.str_outputFileType         = ''
 
@@ -319,7 +321,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         Create and save an image conversion of the DICOM file.
         :return:
         '''
-        # pudb.set_trace()
         b_status            = False
         d_tagsInString      = self.tagsInString_process(d_DICOM,
                                                         self.str_outputImageFile)
