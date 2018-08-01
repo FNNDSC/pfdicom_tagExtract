@@ -19,7 +19,7 @@ import  pfmisc
 from    pfmisc._colors      import Colors
 from    pfmisc              import other
 
-str_version = "2.0.10"
+str_version = "2.0.12"
 str_desc = Colors.CYAN + """
 
 
@@ -378,7 +378,8 @@ pf_dicom_tagExtract = pfdicom_tagExtract.pfdicom_tagExtract(
                         imageFile           = args.imageFile,
                         imageScale          = args.imageScale,
                         verbosity           = args.verbosity,
-                        json                = args.json   
+                        json                = args.json,
+                        version             = str_version   
                     )
 
 # And now run it!
