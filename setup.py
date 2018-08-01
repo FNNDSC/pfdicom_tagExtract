@@ -12,14 +12,14 @@ def readme():
 
 setup(
       name             =   'pfdicom_tagExtract',
-      version          =   '2.0.12',
+      version          =   '2.0.14',
       description      =   'Extract DICOM header info -- part of the pf* family.',
       long_description =   readme(),
       author           =   'FNNDSC',
       author_email     =   'dev@babymri.org',
       url              =   'https://github.com/FNNDSC/pfdicom_tagExtract',
       packages         =   ['pfdicom_tagExtract'],
-      install_requires =   ['pfdicom', 'matplotlib'],
+      install_requires =   ['pfdicom', 'matplotlib', 'pillow'],
       #test_suite       =   'nose.collector',
       #tests_require    =   ['nose'],
       scripts          =   ['bin/pfdicom_tagExtract'],
