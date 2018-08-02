@@ -164,27 +164,37 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         NB: Error when no seriesFiles!
         """
 
+        b_status    = True
+        l_file      = []
+        str_path    = at_data[0]
         if len(self.str_extension):
             al_file = at_data[1]
             al_file = [x for x in al_file if self.str_extension in x]
-        if self.b_convertToImg:
-            if self.str_imageIndex == 'm':
-                if len(al_file):
-                    seriesFile = al_file[int(len(al_file)/2)]
-                b_imageIndexed  = True
-            if self.str_imageIndex == 'f':
-                seriesFile = al_file[:-1]
-                b_imageIndexed  = True
-            if self.str_imageIndex == 'l':
-                seriesFile = al_file[0]
-                b_imageIndexed  = True
-            if not b_imageIndexed:
-                seriesFile = al_file[int(self.str_imageIndex)]
+        if len(al_file):
+            if self.b_convertToImg:
+                if self.str_imageIndex == 'm':
+                    if len(al_file):
+                        seriesFile = al_file[int(len(al_file)/2)]
+                    b_imageIndexed  = True
+                if self.str_imageIndex == 'f':
+                    seriesFile = al_file[:-1]
+                    b_imageIndexed  = True
+                if self.str_imageIndex == 'l':
+                    seriesFile = al_file[0]
+                    b_imageIndexed  = True
+                if not b_imageIndexed:
+                    seriesFile = al_file[int(self.str_imageIndex)]
+            else:
+                seriesFile  = al_file[0]
+            l_file  = [seriesFile]
         else:
-            seriesFile  = al_file[0]
+            self.dp.qprint( "No valid files to analyze found in path %s!" % str_path, 
+                            comms = 'error', level = 3)
+            l_file      = None
+            b_status    = False
         return {
-            'status':   True,
-            'l_file':   [seriesFile]
+            'status':   b_status,
+            'l_file':   l_file
         }
 
     def inputReadCallback(self, *args, **kwargs):
@@ -306,6 +316,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                         b_rawStringAssigned      = True
 
         return {
+            'status':           True,
             'formatted':        b_formatted,
             'd_DCMfileRead':    d_DCMfileRead,
             'dstr_result':      {
