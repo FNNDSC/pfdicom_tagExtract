@@ -160,8 +160,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         """
         Given a list of files, select a single file for further
         analysis.
-
-        NB: Error when no seriesFiles!
         """
 
         b_status    = True
