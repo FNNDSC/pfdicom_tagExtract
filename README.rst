@@ -148,6 +148,9 @@ Command line arguments
         [--json]
         If specified, output a JSON dump of final return.
 
+        [--followLinks]
+        If specified, follow symbolic links.
+
         -v|--verbosity <level>
         Set the app verbosity level. 
 
