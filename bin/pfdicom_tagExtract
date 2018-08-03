@@ -76,6 +76,7 @@ def synopsis(ab_shortOnly = False):
                     [--json]                                        \\
                     [--useIndexhtml]                                \\
                     [-v <verbosity>]                                \\
+                    [--followLinks]                                 \\
                     [--version]                                     \\
                     [-x|--man]                                      \\
                     [-y|--synopsis]
@@ -215,6 +216,9 @@ def synopsis(ab_shortOnly = False):
         [--json]
         If specified, output a JSON dump of final return.
 
+        [--followLinks]
+        If specified, follow symbolic links.
+
         [-v|--verbosity <level>]
         Set the app verbosity level. 
 
@@ -340,6 +344,11 @@ parser.add_argument('--version',
                     dest    = 'b_version',
                     action  = 'store_true',
                     default = False)
+parser.add_argument("--followLinks",
+                    help    = "follow symbolic links",
+                    dest    = 'followLinks',
+                    action  = 'store_true',
+                    default = False)
 parser.add_argument("--json",
                     help    = "output final return in json",
                     dest    = 'json',
@@ -378,6 +387,7 @@ pf_dicom_tagExtract = pfdicom_tagExtract.pfdicom_tagExtract(
                         imageFile           = args.imageFile,
                         imageScale          = args.imageScale,
                         verbosity           = args.verbosity,
+                        followLinks         = args.followLinks,
                         json                = args.json,
                         version             = str_version   
                     )
