@@ -16,7 +16,7 @@ pfdicom_tagExtract
 Quick Overview
 --------------
 
--  ``pfdicom_tagExtract`` generates reports in various formats (txt, html, etc) based on DICOM tags information.
+-  ``pfdicom_tagExtract`` generates reports in various formats (txt, html, etc) based on parsing DICOM meta data (i.e. DICOM tags).
 
 Overview
 --------
