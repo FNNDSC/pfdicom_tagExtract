@@ -42,7 +42,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.6"
+        self.str_version                = "2.2.8"
 
         self.str_outputFileType         = ''
 
@@ -378,23 +378,42 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         def html_make(str_inputFile, str_rawContent, *args):
             str_img     = ""
             if self.b_convertToImg:
-                str_img = "<img src='%s'>" % args[0]
-            htmlPage = '''
-                <!DOCTYPE html>
-                <html>
-                <head>
-                <title>DCM tags: %s</title>
-                </head>
-                <body style = "background-color: #1d1f21; color: white">
+                str_img = '''
+                    <div style="text-align: center;"><img src='%s'></div>
+                ''' % args[0]
+
+            str_headContent     = '''
+                    <title>DCM tags: %s</title>
+                    <style>
+                    .perSeriesOverview {
+                        color: white;
+                        background-color: #1d1f21;
+                    }
+                    </style>
+            ''' % str_inputFile
+
+            str_bodyContent = '''
+            <div class="perSeriesOverview">
                 %s
                 <div style="text-align:left">
                     <pre>
                 %s
                     </pre>
                 </div>
+            </div>
+            ''' % (str_img, "\n" + str_rawContent)
+
+            htmlPage = '''
+                <!DOCTYPE html>
+                <html>
+                <head>
+                %s
+                </head>
+                <body>
+                %s
                 </body>
-                </html> ''' % (str_inputFile, str_img, "\n" + str_rawContent)
-            return htmlPage
+                </html> ''' % (str_headContent, str_bodyContent)
+            return htmlPage, str_bodyContent
 
         path                = at_data[0]
         d_outputInfo        = at_data[1]
@@ -443,17 +462,21 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                     self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
                     filesSaved  += 1
                 if str_outputFormat == 'html': 
-                    str_fileName = str_fileStem + '.html'
+                    str_fileName    = str_fileStem + '.html'
+                    str_bodyName    = str_fileStem + '-body.html'
                     if self.b_useIndexhtml:
                         str_fileName = 'index.html' 
+                    str_htmlContent, str_bodyOnly = \
+                        html_make(  d_outputInfo['d_DCMfileRead']['inputFilename'],
+                                    d_outputInfo['dstr_result']['raw'],
+                                    str_outputImageFile)
                     with open('%s/%s' % (path, str_fileName), 'w') as f:
-                        f.write(
-                            html_make(  d_outputInfo['d_DCMfileRead']['inputFilename'],
-                                        d_outputInfo['dstr_result']['raw'],
-                                        str_outputImageFile)
-                        )
-                    self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
-                    filesSaved  += 1
+                        f.write(str_htmlContent)
+                        self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
+                    with open('%s/%s' % (path, str_bodyName), 'w') as f:
+                        f.write(str_bodyOnly)
+                        self.dp.qprint('Saved report file: %s' % str_bodyOnly, level = 5)
+                    filesSaved  += 2
                 if str_outputFormat == 'csv':
                     str_fileName = str_fileStem + '-csv.txt' 
                     with open('%s/%s' % (path, str_fileName), 'w') as f:
