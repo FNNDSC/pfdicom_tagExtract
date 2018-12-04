@@ -42,7 +42,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.8"
+        self.str_version                = "2.2.10"
 
         self.str_outputFileType         = ''
 
@@ -79,15 +79,8 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
 
     def __init__(self, *args, **kwargs):
         """
-        A "base" class for all pfdicom objects. This class is typically never 
-        called/used directly; derived classes are used to provide actual end
-        functionality.
-
-        This class really only reads in a DICOM file, and populates some
-        internal convenience member variables.
-
-        Furthermore, this class does not have a concept nor concern about 
-        "output" relations.
+        The constructor for the tagExtractor, with specializations over the
+        base pfdicom class.
         """
 
         def imageFileName_process(str_imageFile):
