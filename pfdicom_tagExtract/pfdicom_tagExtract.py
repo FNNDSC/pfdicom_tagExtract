@@ -133,7 +133,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             self.l_outputFileType       = self.str_outputFileType.split(',')
 
         # pudb.set_trace()
-        self.declare_selfvars()
+        pfdicom_tagExtract.declare_selfvars(self)
 
         # Process some of the kwargs by the base class
         super().__init__(*args, **kwargs)
