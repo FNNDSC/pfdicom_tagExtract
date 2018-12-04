@@ -19,7 +19,7 @@ import  pfmisc
 from    pfmisc._colors      import Colors
 from    pfmisc              import other
 
-str_version = "2.2.12"
+str_version = "2.2.14"
 str_desc = Colors.CYAN + """
 
 
@@ -292,7 +292,7 @@ parser.add_argument("-s", "--imageScale",
                     default = '')
 parser.add_argument("-o", "--outputFileStem",
                     help    = "output file stem",
-                    default = "tag",
+                    default = "",
                     dest    = 'outputFileStem')
 parser.add_argument("-O", "--outputDir",
                     help    = "output image directory",
