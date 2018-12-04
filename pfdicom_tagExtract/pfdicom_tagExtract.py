@@ -42,7 +42,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.10"
+        self.str_version                = "2.2.12"
 
         self.str_outputFileType         = ''
 
@@ -66,6 +66,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         self.str_tagList                = ''
         self.str_tagFile                = ''
         self.l_tag                      = []
+        self.l_outputFileType           = []
 
         # Flags
         self.b_printToScreen            = False
@@ -355,7 +356,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             'str_outputImageFile':  str_outputImageFile
         }
 
-    def outputSaveCallback(self, at_data, **kwags):
+    def outputSaveCallback(self, at_data, **kwargs):
         """
 
         Callback for saving outputs.
