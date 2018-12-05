@@ -42,7 +42,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.14"
+        self.str_version                = "2.2.16"
 
         self.str_outputFileType         = ''
 
@@ -126,7 +126,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             self.str_outputFileType     = str_outputFile
             self.l_outputFileType       = self.str_outputFileType.split(',')
 
-        pudb.set_trace()
+        # pudb.set_trace()
         pfdicom_tagExtract.declare_selfvars(self)
 
         # Process some of the kwargs by the base class
