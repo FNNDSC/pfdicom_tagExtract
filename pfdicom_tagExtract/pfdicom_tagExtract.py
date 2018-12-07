@@ -126,7 +126,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             self.str_outputFileType     = str_outputFile
             self.l_outputFileType       = self.str_outputFileType.split(',')
 
-        # pudb.set_trace()
         pfdicom_tagExtract.declare_selfvars(self)
 
         # Process some of the kwargs by the base class
@@ -162,6 +161,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         if len(self.str_extension):
             al_file = at_data[1]
             al_file = [x for x in al_file if self.str_extension in x]
+            al_file.sort()
         if len(al_file):
             if self.b_convertToImg:
                 if self.str_imageIndex == 'm':
