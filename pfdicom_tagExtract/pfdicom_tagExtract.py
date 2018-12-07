@@ -42,7 +42,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.16"
+        self.str_version                = "2.2.18"
 
         self.str_outputFileType         = ''
 
