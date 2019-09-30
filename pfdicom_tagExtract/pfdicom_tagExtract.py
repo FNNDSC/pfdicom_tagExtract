@@ -5,6 +5,7 @@ import      argparse
 import      json
 import      pprint
 import      csv
+import      logging
 
 # Project specific imports
 import      pfmisc
@@ -16,8 +17,11 @@ import      pudb
 import      pftree
 import      pfdicom
 
+matlogger               = logging.getLogger('matplotlib')
+matlogger.propagate     = False
 import      matplotlib
 matplotlib.use('Agg')
+
 import      pylab
 import      matplotlib.cm       as      cm
 
@@ -42,7 +46,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.18"
+        self.str_version                = "2.2.20"
 
         self.str_outputFileType         = ''
 
