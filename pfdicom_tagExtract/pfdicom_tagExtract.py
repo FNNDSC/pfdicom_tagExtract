@@ -193,6 +193,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             'l_file':   l_file
         }
 
+    # pudb.set_trace()
     def inputReadCallback(self, *args, **kwargs):
         """
 
@@ -203,16 +204,20 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         the dcm data set.
 
         """
+
+        # pudb.set_trace()
+
         b_status            = True
         str_file            = ''
         d_DCMfileRead       = {}
         filesRead           = 0
 
-        # pudb.set_trace()
 
         for k, v in kwargs.items():
             if k == 'file':     str_file    = v
             if k == 'path':     str_path    = v
+
+        pudb.set_trace()
 
         if len(args):
             at_data         = args[0]
@@ -336,7 +341,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         self.dp.qprint('Saving image file: %s...' % str_pathFile, level = 5)
         try:
             image           = d_DICOM['dcm'].pixel_array
-            pylab.imshow(image, cmap=pylab.cm.bone, interpolation = self.str_interpolation)
+            # pylab.imshow(image, cmap=pylab.cm.bone, interpolation = self.str_interpolation)
             ax              = pylab.gca()
             F               = pylab.gcf()
             defaultSize     = F.get_size_inches()
@@ -498,6 +503,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         """
         A simple "alias" for calling the pftree method.
         """
+        pudb.set_trace()
         d_tagExtract    = {}
         d_tagExtract    = self.pf_tree.tree_process(
                             inputReadCallback       = self.inputReadCallback,
