@@ -50,7 +50,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.22"
+        self.str_version                = "2.2.24"
 
         self.str_outputFileType         = ''
 
@@ -220,8 +220,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         for k, v in kwargs.items():
             if k == 'file':     str_file    = v
             if k == 'path':     str_path    = v
-
-        pudb.set_trace()
 
         if len(args):
             at_data         = args[0]
@@ -507,7 +505,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         """
         A simple "alias" for calling the pftree method.
         """
-        pudb.set_trace()
         d_tagExtract    = {}
         d_tagExtract    = self.pf_tree.tree_process(
                             inputReadCallback       = self.inputReadCallback,
