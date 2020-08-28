@@ -63,12 +63,12 @@ Command line arguments
         assumption that each <inputDir> contains a single DICOM series.
 
         -i|--inputFile <inputFile>
-        An optional <inputFile> specified relative to the <inputDir>. If 
-        specified, then do not perform a directory walk, but convert only 
+        An optional <inputFile> specified relative to the <inputDir>. If
+        specified, then do not perform a directory walk, but convert only
         this file.
 
         -e|--extension <DICOMextension>
-        An optional extension to filter the DICOM files of interest from the 
+        An optional extension to filter the DICOM files of interest from the
         <inputDir>.
 
         [-O|--outputDir <outputDir>]
@@ -77,10 +77,10 @@ Command line arguments
         [--outputLeafDir <outputLeafDirFormat>]
         If specified, will apply the <outputLeafDirFormat> to the output
         directories containing data. This is useful to blanket describe
-        final output directories with some descriptive text, such as 
-        'anon' or 'preview'. 
+        final output directories with some descriptive text, such as
+        'anon' or 'preview'.
 
-        This is a formatting spec, so 
+        This is a formatting spec, so
 
             --outputLeafDir 'preview-%s'
 
@@ -98,26 +98,26 @@ Command line arguments
 
         -m|--image <[<index>:]imageFile>
         If specified, also convert the <inputFile> to <imageFile>. If the
-        name is preceded by an index and colon, then convert this indexed 
+        name is preceded by an index and colon, then convert this indexed
         file in the particular <inputDir>.
 
         [-s|--imageScale <factor:interpolation>]
         If an image conversion is specified, this flag will scale the image
-        by <factor> and use an interpolation <order>. This is useful in 
+        by <factor> and use an interpolation <order>. This is useful in
         increasing the size of images for the html output.
 
         Note that certain interpolation choices can result in a significant
         slowdown!
 
             interpolation order:
-            
+
             'none', 'nearest', 'bilinear', 'bicubic', 'spline16',
             'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
             'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos'
 
         -o|--outputFileStem <outputFileStem>
         The output file stem to store data. This should *not* have a file
-        extension, or rather, any "." in the name are considered part of 
+        extension, or rather, any "." in the name are considered part of
         the stem and are *not* considered extensions.
 
         [-t|--outputFileType <outputFileType>]
@@ -152,7 +152,7 @@ Command line arguments
         If specified, follow symbolic links.
 
         -v|--verbosity <level>
-        Set the app verbosity level. 
+        Set the app verbosity level.
 
             0: No internal output;
             1: Run start / stop output notification;
@@ -179,5 +179,5 @@ Run on a target tree and output some detail and stats
                     --useIndexhtml                              \
                     -t raw,json,html,dict,col,csv               \
                     --threads 0 -v 0 --json
- 
+
 which will output only at script conclusion and will log a JSON formatted string.
