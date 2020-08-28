@@ -1,3 +1,7 @@
+# Turn off all logging for modules in this libary.
+import logging
+logging.disable(logging.CRITICAL)
+
 # System imports
 import      os
 import      getpass
@@ -28,7 +32,7 @@ import      matplotlib.cm       as      cm
 class pfdicom_tagExtract(pfdicom.pfdicom):
     """
 
-    A class based on the 'pfdicom' infrastructure that extracts 
+    A class based on the 'pfdicom' infrastructure that extracts
     and processes DICOM tags according to several requirements.
 
     Powerful output formatting, such as image conversion to jpg/png
@@ -46,7 +50,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.20"
+        self.str_version                = "2.2.22"
 
         self.str_outputFileType         = ''
 
@@ -136,7 +140,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         super().__init__(*args, **kwargs)
 
         for key, value in kwargs.items():
-            if key == "outputFileType":     outputFile_process(value) 
+            if key == "outputFileType":     outputFile_process(value)
             if key == 'printToScreen':      self.b_printToScreen        = bool(value)
             if key == 'useIndexhtml':       self.b_useIndexhtml         = bool(value)
             if key == 'imageFile':          imageFileName_process(value)
@@ -146,7 +150,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             if key == 'verbosity':          self.verbosityLevel         = int(value)
 
         # Set logging
-        self.dp                        = pfmisc.debug(    
+        self.dp                        = pfmisc.debug(
                                             verbosity   = self.verbosityLevel,
                                             within      = self.__name__
                                             )
@@ -184,7 +188,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                 seriesFile  = al_file[0]
             l_file  = [seriesFile]
         else:
-            self.dp.qprint( "No valid files to analyze found in path %s!" % str_path, 
+            self.dp.qprint( "No valid files to analyze found in path %s!" % str_path,
                             comms = 'error', level = 3)
             l_file      = None
             b_status    = False
@@ -200,7 +204,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         Callback for reading files from specific directory.
 
         In the context of pfdicom_tagExtract, this implies reading
-        a single DICOM file in each target directory and returning 
+        a single DICOM file in each target directory and returning
         the dcm data set.
 
         """
@@ -227,7 +231,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
 
         if len(str_file):
             self.dp.qprint("reading: %s/%s" % (str_path, str_file), level = 5)
-            d_DCMfileRead   = self.DICOMfile_read( 
+            d_DCMfileRead   = self.DICOMfile_read(
                                     file        = '%s/%s' % (str_path, str_file),
                                     l_tagsToUse = self.l_tag
             )
@@ -248,7 +252,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         """
         Callback for doing actual work on the read data.
 
-        The 'data' component passed to this method is the 
+        The 'data' component passed to this method is the
         dictionary returned by the inputReadCallback()
         method.
 
@@ -270,7 +274,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             d_inputRead     = at_data[1]
 
         # Historically the following were member variables, but
-        # due to threading concerns these were elevated to local 
+        # due to threading concerns these were elevated to local
         # variables to avoid scoping collisions.
         str_json        = ''
         str_dict        = ''
@@ -287,8 +291,8 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                     str_json    = json.dumps(
                                         d_DCMfileRead\
                                         ['d_DICOM']\
-                                        ['d_json'], 
-                                        indent              = 4, 
+                                        ['d_json'],
+                                        indent              = 4,
                                         sort_keys           = True
                                     )
                     b_formatted = True
@@ -300,7 +304,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                     b_formatted = True
                 if str_outputFormat == 'col':
                     for tag in l_tagsToUse:
-                        str_col     += '%70s\t%s\n' % ( tag, 
+                        str_col     += '%70s\t%s\n' % ( tag,
                                                         d_DCMfileRead\
                                                         ['d_DICOM']
                                                         ['d_dicomSimple']
@@ -345,8 +349,8 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             ax              = pylab.gca()
             F               = pylab.gcf()
             defaultSize     = F.get_size_inches()
-            if self.f_imageScale: 
-                F.set_size_inches( (defaultSize[0]*self.f_imageScale, 
+            if self.f_imageScale:
+                F.set_size_inches( (defaultSize[0]*self.f_imageScale,
                                     defaultSize[1]*self.f_imageScale) )
             ax.set_facecolor('#1d1f21')
             ax.tick_params(axis = 'x', colors='white')
@@ -370,7 +374,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
 
         Callback for saving outputs.
 
-        In order to be thread-safe, all directory/file 
+        In order to be thread-safe, all directory/file
         descriptors must be *absolute* and no chdir()'s
         must ever be called!
 
@@ -440,35 +444,35 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         for str_outputFormat in self.l_outputFileType:
             str_fileStem        = d_outputInfo['d_DCMfileRead']['outputFileStem']
             if len(str_fileStem):
-                if str_outputFormat == 'json': 
-                    str_fileName = str_fileStem + '.json' 
+                if str_outputFormat == 'json':
+                    str_fileName = str_fileStem + '.json'
                     with open('%s/%s' % (path, str_fileName), 'w') as f:
                         f.write(d_outputInfo['dstr_result']['json'])
                     self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
                     filesSaved  += 1
-                if str_outputFormat == 'dict': 
-                    str_fileName = str_fileStem + '-dict.txt' 
+                if str_outputFormat == 'dict':
+                    str_fileName = str_fileStem + '-dict.txt'
                     with open('%s/%s' % (path, str_fileName), 'w') as f:
                         f.write(d_outputInfo['dstr_result']['dict'])
                     self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
                     filesSaved  += 1
-                if str_outputFormat == 'col': 
-                    str_fileName = str_fileStem + '-col.txt' 
+                if str_outputFormat == 'col':
+                    str_fileName = str_fileStem + '-col.txt'
                     with open('%s/%s' % (path, str_fileName), 'w') as f:
                         f.write(d_outputInfo['dstr_result']['col'])
                     self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
                     filesSaved  += 1
-                if str_outputFormat == 'raw': 
-                    str_fileName = str_fileStem + '-raw.txt' 
+                if str_outputFormat == 'raw':
+                    str_fileName = str_fileStem + '-raw.txt'
                     with open('%s/%s' % (path, str_fileName), 'w') as f:
                         f.write(d_outputInfo['dstr_result']['raw'])
                     self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
                     filesSaved  += 1
-                if str_outputFormat == 'html': 
+                if str_outputFormat == 'html':
                     str_fileName    = str_fileStem + '.html'
                     str_bodyName    = str_fileStem + '-body.html'
                     if self.b_useIndexhtml:
-                        str_fileName = 'index.html' 
+                        str_fileName = 'index.html'
                     str_htmlContent, str_bodyOnly = \
                         html_make(  d_outputInfo['d_DCMfileRead']['inputFilename'],
                                     d_outputInfo['dstr_result']['raw'],
@@ -481,7 +485,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                         self.dp.qprint('Saved report file: %s' % str_bodyOnly, level = 5)
                     filesSaved  += 2
                 if str_outputFormat == 'csv':
-                    str_fileName = str_fileStem + '-csv.txt' 
+                    str_fileName = str_fileStem + '-csv.txt'
                     with open('%s/%s' % (path, str_fileName), 'w') as f:
                         w = csv.DictWriter(f, d_outputInfo
                                                         ['d_DCMfileRead']
@@ -515,7 +519,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
 
     def run(self, *args, **kwargs):
         """
-        The run method is merely a thin shim down to the 
+        The run method is merely a thin shim down to the
         embedded pftree run method.
         """
         b_status        = True
@@ -523,7 +527,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         d_pftreeRun     = {}
 
         self.dp.qprint(
-                "Starting pfdicom_tagSub run... (please be patient while running)", 
+                "Starting pfdicom_tagSub run... (please be patient while running)",
                 level = 1
                 )
 
@@ -532,7 +536,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
 
         # Run the base class, which probes the file tree
         # and does an initial analysis. Also suppress the
-        # base class from printing JSON results since those 
+        # base class from printing JSON results since those
         # will be printed by this class
         d_pfdicom       = super().run(
                                         JSONprint   = False,
