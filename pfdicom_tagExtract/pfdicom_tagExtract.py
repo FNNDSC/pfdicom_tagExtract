@@ -343,7 +343,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         self.dp.qprint('Saving image file: %s...' % str_pathFile, level = 5)
         try:
             image           = d_DICOM['dcm'].pixel_array
-            # pylab.imshow(image, cmap=pylab.cm.bone, interpolation = self.str_interpolation)
+            pylab.imshow(image, cmap=pylab.cm.bone, interpolation = self.str_interpolation)
             ax              = pylab.gca()
             F               = pylab.gcf()
             defaultSize     = F.get_size_inches()
