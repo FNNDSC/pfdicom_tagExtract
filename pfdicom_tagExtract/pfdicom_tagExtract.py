@@ -50,7 +50,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.24"
+        self.str_version                = "2.2.28"
 
         self.str_outputFileType         = ''
 
@@ -162,7 +162,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         Given a list of files, select a single file for further
         analysis.
         """
-
+        b_imageIndexed  = False
         b_status    = True
         l_file      = []
         str_path    = at_data[0]
@@ -177,7 +177,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                         seriesFile = al_file[int(len(al_file)/2)]
                     b_imageIndexed  = True
                 if self.str_imageIndex == 'f':
-                    seriesFile = al_file[:-1]
+                    seriesFile = al_file[-1:]
                     b_imageIndexed  = True
                 if self.str_imageIndex == 'l':
                     seriesFile = al_file[0]
@@ -270,7 +270,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             at_data         = args[0]
             str_path        = at_data[0]
             d_inputRead     = at_data[1]
-
         # Historically the following were member variables, but
         # due to threading concerns these were elevated to local
         # variables to avoid scoping collisions.
