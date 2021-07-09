@@ -50,7 +50,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         #
         self.str_desc                   = ''
         self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.28"
+        self.str_version                = "2.2.30"
 
         self.str_outputFileType         = ''
 
@@ -166,24 +166,25 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         b_status    = True
         l_file      = []
         str_path    = at_data[0]
+        
         if len(self.str_extension):
             al_file = at_data[1]
             al_file = [x for x in al_file if self.str_extension in x]
-            al_file.sort()
+        al_file.sort()
         if len(al_file):
             if self.b_convertToImg:
                 if self.str_imageIndex == 'm':
                     if len(al_file):
-                        seriesFile = al_file[int(len(al_file)/2)]
+                        seriesFile = al_file[int(len(al_file)/2) -1]
                     b_imageIndexed  = True
                 if self.str_imageIndex == 'f':
-                    seriesFile = al_file[-1:]
+                    seriesFile = al_file[-1]
                     b_imageIndexed  = True
                 if self.str_imageIndex == 'l':
                     seriesFile = al_file[0]
                     b_imageIndexed  = True
                 if not b_imageIndexed:
-                    seriesFile = al_file[int(self.str_imageIndex)]
+                    seriesFile = al_file[int(self.str_imageIndex) -1]
             else:
                 seriesFile  = al_file[0]
             l_file  = [seriesFile]
@@ -226,6 +227,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             str_path        = at_data[0]
             l_file          = at_data[1]
             str_file        = l_file[0]
+            l_file.sort()
 
         if len(str_file):
             self.dp.qprint("reading: %s/%s" % (str_path, str_file), level = 5)
