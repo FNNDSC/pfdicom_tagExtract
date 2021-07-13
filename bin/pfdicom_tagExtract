@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# (c) 2017 Fetal-Neonatal Neuroimaging & Developmental Science Center
+# (c) 2017+ Fetal-Neonatal Neuroimaging & Developmental Science Center
 #                   Boston Children's Hospital
 #
 #              http://childrenshospital.org/FNNDSC/
@@ -19,7 +19,7 @@ import  pfmisc
 from    pfmisc._colors      import Colors
 from    pfmisc              import other
 
-str_version = "2.2.30"
+str_version = "2.2.32"
 str_desc = Colors.CYAN + """
 
 
