@@ -549,7 +549,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         d_pfdicomRun        : dict  = {}
         b_JSONprint         : bool  = True
         d_treeHone          : dict  = {}
-        d_tagExtract        : bool  = {}
+        d_tagExtract        : dict  = {}
 
         self.dp.qprint(
                 "Starting pfdicom_tagSub run... (please be patient while running)",
