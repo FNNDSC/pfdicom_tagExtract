@@ -12,7 +12,7 @@ def readme():
 
 setup(
       name             =   'pfdicom_tagExtract',
-      version          =   '2.2.32',
+      version          =   '3.0.4',
       description      =   'Extract DICOM header info -- part of the pf* family.',
       long_description =   readme(),
       author           =   'FNNDSC',
@@ -20,9 +20,11 @@ setup(
       url              =   'https://github.com/FNNDSC/pfdicom_tagExtract',
       packages         =   ['pfdicom_tagExtract'],
       install_requires =   ['pfdicom', 'matplotlib', 'pillow'],
-      #test_suite       =   'nose.collector',
-      #tests_require    =   ['nose'],
-      scripts          =   ['bin/pfdicom_tagExtract'],
+      entry_points={
+          'console_scripts': [
+              'pfdicom_tagExtract = pfdicom_tagExtract.__main__:main'
+          ]
+      },
       license          =   'MIT',
       zip_safe         =   False
 )
