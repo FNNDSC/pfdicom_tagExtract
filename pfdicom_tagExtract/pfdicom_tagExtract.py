@@ -570,13 +570,10 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                                     )
 
         if d_pfdicomRun['status']:
-            str_startDir    = os.getcwd()
-            # os.chdir(self.str_inputDir)
             if b_status:
                 d_treeHone      = self.tree_hone()
                 d_tagExtract    = self.tags_extract()
-                b_status        = b_status and d_tagExtract['status']
-            # os.chdir(str_startDir)
+                b_status        = d_tagExtract['status']
 
         d_ret = {
             'status':           b_status,
@@ -589,6 +586,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         if self.args['json'] and b_JSONprint:
             self.ret_jdump(d_ret, **kwargs)
         else:
-            self.dp.qprint('\tReturning from pfdicom_tagExtract run...', level = 1)
+            self.dp.qprint('Returning from pfdicom_tagExtract run...', level = 1)
 
         return d_ret
