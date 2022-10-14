@@ -145,7 +145,7 @@ def synopsis(ab_shortOnly = False):
                 --outputFileStem '%_md5|6_PatientID-%PatientAge'                \\
                 --imageFile 'm:%_md5|6_PatientID-%PatientAge.jpg'               \\
                 --outputFileType raw,json,html,dict,col,csv                     \\
-                --threads 0 -v 1
+                --threads 0 --verbosity 1
 
     '''
 
