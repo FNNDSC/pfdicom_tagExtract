@@ -121,7 +121,7 @@ package_argSynopsisSelf = """
 
 """
 
-package_CLIfull             = pfdicom_CLIfull     + package_CLIself
+package_CLIfull             = package_CLIself      + pfdicom_CLIfull
 package_argsSynopsisFull    = pfdicom_argSynopsis + package_argSynopsisSelf
 
 def synopsis(ab_shortOnly = False):
@@ -130,11 +130,12 @@ def synopsis(ab_shortOnly = False):
     NAME
 
         pfdicom_tagExtract
-        - process DICOM file header information down a file system tree.
+        - process (extract) DICOM file header information for files located down
+          arbitrary filesystem trees.
 
     SYNOPSIS
 
-            pfdicom_tagExtract \ ''' + package_CLIfull + '''                                      \\
+        pfdicom_tagExtract \ ''' + package_CLIfull + '''
 
     BRIEF EXAMPLE
 
@@ -247,6 +248,12 @@ parserSelf.add_argument("--printToScreen",
                     action  = 'store_true',
                     default = False)
 
+parser  = ArgumentParser(description        = str_desc,
+                         formatter_class    = RawTextHelpFormatter,
+                         parents            = [pfdicom_parser, parserSelf],
+                         add_help           = False)
+
+
 def earlyExit_check(args) -> int:
     """Perform some preliminary checks
     """
@@ -267,12 +274,7 @@ def main(argv=None):
 
     d_pfdicom_tagExtract    : dict  = {}
 
-    parser  = ArgumentParser(description        = str_desc,
-                             formatter_class    = RawTextHelpFormatter,
-                             parents            = [pfdicom_parser, parserSelf],
-                             add_help           = False)
-
-    args = parser.parse_args()
+    args                    = parser.parse_args()
 
     if earlyExit_check(args): return 1
 
