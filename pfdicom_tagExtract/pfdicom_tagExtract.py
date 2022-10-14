@@ -552,7 +552,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         d_tagExtract        : dict  = {}
 
         self.dp.qprint(
-                "Starting pfdicom_tagSub run... (please be patient while running)",
+                "Starting pfdicom_tagExtract run... (please be patient while running)",
                 level = 1
                 )
 
@@ -589,6 +589,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         if self.args['json'] and b_JSONprint:
             self.ret_jdump(d_ret, **kwargs)
         else:
-            self.dp.qprint('\tReturning from pfdicom run...', level = 1)
+            self.dp.qprint('\tReturning from pfdicom_tagExtract run...', level = 1)
 
         return d_ret
