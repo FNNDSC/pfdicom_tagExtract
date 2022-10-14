@@ -183,13 +183,23 @@ def synopsis(ab_shortOnly = False):
                 --outputFileStem '%_md5|6_PatientID-%PatientAge'                \\
                 --imageFile 'm:%_md5|6_PatientID-%PatientAge.jpg'               \\
                 --outputFileType raw,json,html,dict,col,csv                     \\
-                --imageScales 3:none                                            \\
+                --imageScale 3:none                                             \\
                 --useIndexhtml                                                  \\
                 --outputFileType raw,json,html,dict,col,csv                     \\
-                --threads 0 -v 0 --json
+                --threads 0 --verbosity 1
 
-        which will output only at script conclusion and will log a JSON
-        formatted string.
+    will process only the "middle" DICOM file (dcm) in each series directory
+    down the tree /var/www/html/normsmall, producing a jpg image of the DICOM
+    as well as a series of output report formats with progressive results
+    shown in the terminal. Use a --json flag to get only JSON results.
+
+    The script can also be instructed to not process files into outputs, but to
+    only print the DICOM tag information to screen of a given DICOM file
+    <DCMfile>:
+
+        pfdicom_tagExtract                                                      \\
+            --verbosity 0 --inputDir ./  --printToScreen                        \\
+            --inputFile <DCMfile>
 
     '''
     if ab_shortOnly:
