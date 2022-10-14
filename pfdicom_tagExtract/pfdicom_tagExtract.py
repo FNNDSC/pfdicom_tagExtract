@@ -18,8 +18,13 @@ from        pfmisc              import  other
 from        pfmisc              import  error
 
 import      pudb
-import      pftree
-import      pfdicom
+# import      pftree
+from        pfdicom             import  pfdicom
+
+try:
+    from    .                   import __name__, __version__
+except:
+    from    __init__            import __name__, __version__
 
 matlogger               = logging.getLogger('matplotlib')
 matlogger.propagate     = False
@@ -49,17 +54,10 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         # Object desc block
         #
         self.str_desc                   = ''
-        self.__name__                   = "pfdicom_tagExtract"
-        self.str_version                = "2.2.30"
+        self.__name__                   = __name__
+        self.str_version                = __version__
 
         self.str_outputFileType         = ''
-
-        # String representations of different outputFormats
-        self.strRaw                     = ''
-        self.str_json                   = ''
-        self.str_dict                   = ''
-        self.str_col                    = ''
-        self.str_raw                    = ''
 
         # Image conversion
         self.b_convertToImg             = False
@@ -135,6 +133,10 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             self.l_outputFileType       = self.str_outputFileType.split(',')
 
         pfdicom_tagExtract.declare_selfvars(self)
+        self.args                       = args[0]
+        self.str_desc                   = self.args['str_desc']
+        if len(self.args):
+            kwargs  = {**self.args, **kwargs}
 
         # Process some of the kwargs by the base class
         super().__init__(*args, **kwargs)
@@ -166,11 +168,8 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         b_status    = True
         l_file      = []
         str_path    = at_data[0]
-        
-        if len(self.str_extension):
-            al_file = at_data[1]
-            al_file = [x for x in al_file if self.str_extension in x]
-        al_file.sort()
+
+        al_file = at_data[1]
         if len(al_file):
             if self.b_convertToImg:
                 if self.str_imageIndex == 'm':
@@ -198,7 +197,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             'l_file':   l_file
         }
 
-    # pudb.set_trace()
     def inputReadCallback(self, *args, **kwargs):
         """
 
@@ -209,9 +207,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         the dcm data set.
 
         """
-
-        # pudb.set_trace()
-
         b_status            = True
         str_file            = ''
         d_DCMfileRead       = {}
@@ -261,8 +256,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         b_formatted         = False
 
         b_rawStringAssigned = False
-
-        # pudb.set_trace()
 
         for k, v in kwargs.items():
             if k == 'd_inputRead':      d_inputRead     = v
@@ -426,11 +419,9 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         str_outputImageFile = ""
         d_convertToImg      = {}
         str_cwd             = os.getcwd()
-        other.mkdir(self.str_outputDir)
+        other.mkdir(self.args['outputDir'])
         filesSaved          = 0
         other.mkdir(path)
-
-        # pudb.set_trace()
 
         if self.b_printToScreen:
             print(d_outputInfo['dstr_result']['raw'])
@@ -515,14 +506,50 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         )
         return d_tagExtract
 
+    def ret_jdump(self, d_ret, **kwargs):
+        """
+        JSON print results to console (or caller)
+        """
+        b_print     = True
+        for k, v in kwargs.items():
+            if k == 'JSONprint':    b_print     = bool(v)
+        if b_print:
+            print(
+                json.dumps(
+                    d_ret,
+                    indent      = 4,
+                    sort_keys   = True
+                )
+        )
+
+    def tree_hone(self) -> dict:
+        """Apply further "honing" of the input tree, specifically for
+        special index cases in file list: first, middle, end, etc.
+
+        Returns:
+            dict: analysis dictionary
+        """
+        return self.pf_tree.tree_process(
+                        inputReadCallback       = None,
+                        analysisCallback        = self.filelist_prune,
+                        outputWriteCallback     = None,
+                        applyResultsTo          = 'inputTree',
+                        applyKey                = 'l_file',
+                        persistAnalysisResults  = True
+        )
+
     def run(self, *args, **kwargs):
         """
         The run method is merely a thin shim down to the
         embedded pftree run method.
         """
-        b_status        = True
-        d_tagExtract    = {}
-        d_pftreeRun     = {}
+
+        b_status            : bool  = True
+        b_timerStart        : bool  = False
+        d_pfdicomRun        : dict  = {}
+        b_JSONprint         : bool  = True
+        d_treeHone          : dict  = {}
+        d_tagExtract        : bool  = {}
 
         self.dp.qprint(
                 "Starting pfdicom_tagSub run... (please be patient while running)",
@@ -531,34 +558,37 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
 
         for k, v in kwargs.items():
             if k == 'timerStart':   other.tic()
+            if k == 'JSONprint':    b_JSONprint     = bool(v)
 
         # Run the base class, which probes the file tree
         # and does an initial analysis. Also suppress the
         # base class from printing JSON results since those
         # will be printed by this class
-        d_pfdicom       = super().run(
+        d_pfdicomRun        = super().run(
                                         JSONprint   = False,
                                         timerStart  = False
                                     )
 
-        if d_pfdicom['status']:
+        if d_pfdicomRun['status']:
             str_startDir    = os.getcwd()
-            os.chdir(self.str_inputDir)
+            # os.chdir(self.str_inputDir)
             if b_status:
+                d_treeHone      = self.tree_hone()
                 d_tagExtract    = self.tags_extract()
                 b_status        = b_status and d_tagExtract['status']
-            os.chdir(str_startDir)
+            # os.chdir(str_startDir)
 
         d_ret = {
             'status':           b_status,
-            'd_pfdicom':        d_pfdicom,
+            'd_treeHone':       d_treeHone,
+            'd_pfdicom':        d_pfdicomRun,
             'd_tagExtract':     d_tagExtract,
             'runTime':          other.toc()
         }
 
-        if self.b_json:
-            self.ret_dump(d_ret, **kwargs)
-
-        self.dp.qprint('Returning from pfdicom_tagExtract run...', level = 1)
+        if self.args['json'] and b_JSONprint:
+            self.ret_jdump(d_ret, **kwargs)
+        else:
+            self.dp.qprint('\tReturning from pfdicom run...', level = 1)
 
         return d_ret
