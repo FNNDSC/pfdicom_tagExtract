@@ -419,7 +419,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         str_outputImageFile = ""
         d_convertToImg      = {}
         str_cwd             = os.getcwd()
-        other.mkdir(self.args['outputDir'])
+        other.mkdir(self.pf_tree.str_outputDir)
         filesSaved          = 0
         other.mkdir(path)
 
