@@ -583,9 +583,6 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
             'runTime':          other.toc()
         }
 
-        if self.args['json'] and b_JSONprint:
-            self.ret_jdump(d_ret, **kwargs)
-        else:
-            self.dp.qprint('Returning from pfdicom_tagExtract run...', level = 1)
+        self.dp.qprint('Returning from pfdicom_tagExtract run...', level = 1)
 
         return d_ret
