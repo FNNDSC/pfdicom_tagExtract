@@ -423,6 +423,8 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
         filesSaved          = 0
         other.mkdir(path)
 
+        #print(d_outputInfo['d_DCMfileRead']['d_DICOM']['dcm'])
+
         if self.b_printToScreen:
             print(d_outputInfo['dstr_result']['raw'])
 
@@ -455,7 +457,7 @@ class pfdicom_tagExtract(pfdicom.pfdicom):
                 if str_outputFormat == 'raw':
                     str_fileName = str_fileStem + '-raw.txt'
                     with open('%s/%s' % (path, str_fileName), 'w') as f:
-                        f.write(d_outputInfo['dstr_result']['raw'])
+                        f.write(str(d_outputInfo['d_DCMfileRead']['d_DICOM']['dcm']))
                     self.dp.qprint('Saved report file: %s' % str_fileName, level = 5)
                     filesSaved  += 1
                 if str_outputFormat == 'html':
